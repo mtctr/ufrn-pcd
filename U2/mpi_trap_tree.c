@@ -39,7 +39,7 @@ int main(void) {
    int my_rank, comm_sz, n = 1024, local_n, divisor = 2, proc_diff = 1;
    double a = 0.0, b = 3.0, h, local_a, local_b;
    double local_int, aux_int;
-   int i, flag = 0;
+   int i;
 
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
@@ -61,29 +61,26 @@ int main(void) {
    local_int = Trap(local_a, local_b, local_n, h);
 
 
-   for(divisor = 2; divisor <= comm_sz; divisor*=2){
+   for(divisor = 2; divisor <= comm_sz; divisor*=2){     
      for(i = 0; i<comm_sz; i+=proc_diff){
-       if(i%divisor!=0){
-         printf("Proc %d sending to %d\n", i, i-proc_diff);
+       if(i%divisor!=0 && my_rank == i){
+         printf("Proc %d sending to %d\n", my_rank, i-proc_diff);
          MPI_Send(&local_int, 1, MPI_DOUBLE, i-proc_diff, 0, MPI_COMM_WORLD);
        }
      }
-     for(i = 0; i<comm_sz; i++){
-       if(i%divisor==0){
+     for(i = 0; i<comm_sz; i+=proc_diff){
+       if(i%divisor==0 && my_rank == i){
          aux_int = local_int;
-         printf("Proc %d rcv from %d\n", i, i+proc_diff);
+         printf("Proc %d rcv from %d\n", my_rank, i+proc_diff);
          MPI_Recv(&local_int, 1, MPI_DOUBLE, i+proc_diff, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
          local_int += aux_int;
        }
      }
      proc_diff *=2;
-     if(proc_diff == comm_sz){
-       flag = 1;
-     }
    }
 
    /* Print the result */
-   if (my_rank == 0 && flag == 1) {
+   if (my_rank == 0) {
       printf("With n = %d trapezoids, our estimate\n", n);
       printf("of the integral from %f to %f = %.15e\n",
           a, b, local_int);
