@@ -61,7 +61,7 @@ int main(void) {
    local_b = local_a + local_n*h;
    local_int = Trap(local_a, local_b, local_n, h);
 
-   MPI_Barrier(MPI_COMM_WORLD);
+   MPI_Barrier(comm);
    start = MPI_Wtime();
    for(divisor = 2; divisor <= comm_sz; divisor*=2){     
      for(i = 0; i<comm_sz; i+=proc_diff){
