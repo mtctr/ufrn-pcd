@@ -40,11 +40,12 @@ int main(void) {
    double a = 0.0, b = 3.0, h, local_a, local_b;
    double local_int, aux_int;
    int i;
-	 double start, finish, loc_elapsed, elapsed; 
+	 double start, finish, loc_elapsed, elapsed;
+
 
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
-
+   
    /* Get my process rank */
    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
@@ -66,14 +67,14 @@ int main(void) {
    for(divisor = 2; divisor <= comm_sz; divisor*=2){     
      for(i = 0; i<comm_sz; i+=proc_diff){
        if(i%divisor!=0 && my_rank == i){
-         printf("Proc %d sending to %d\n", my_rank, i-proc_diff);
+         //printf("Proc %d sending to %d\n", my_rank, i-proc_diff);
          MPI_Send(&local_int, 1, MPI_DOUBLE, i-proc_diff, 0, MPI_COMM_WORLD);
        }
      }
      for(i = 0; i<comm_sz; i+=proc_diff){
        if(i%divisor==0 && my_rank == i){
          aux_int = local_int;
-         printf("Proc %d rcv from %d\n", my_rank, i+proc_diff);
+        // printf("Proc %d rcv from %d\n", my_rank, i+proc_diff);
          MPI_Recv(&local_int, 1, MPI_DOUBLE, i+proc_diff, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
          local_int += aux_int;
        }
@@ -86,7 +87,7 @@ int main(void) {
 
    /* Print the result */
    if (my_rank == 0) {
-			printf("Elapsed time = %e\n", elapsed);
+      printf("Elapsed time = %e\n", elapsed);
       printf("With n = %d trapezoids, our estimate\n", n);
       printf("of the integral from %f to %f = %.15e\n",
           a, b, local_int);
