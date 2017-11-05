@@ -72,9 +72,9 @@ int main(void) {
    Allocate_arrays(&local_A, &local_x, &local_y, local_m, m, local_n, comm, mat_col);
 
    Read_matrix("A", local_A, m, local_m, n, my_rank, comm, mat_col);
-//#  ifdef DEBUG
+#  ifdef DEBUG
    Print_matrix("A", local_A, m, local_m, n, my_rank, comm, mat_col);
-//#  endif
+#  endif
    Read_vector("x", local_x, n, local_n, my_rank, comm);
 #  ifdef DEBUG
    Print_vector("x", local_x, n, local_n, my_rank, comm);
@@ -232,7 +232,7 @@ void Allocate_arrays(
 
    int local_ok = 1;
 
-   *local_A_pp = malloc(local_n*local_m*sizeof(double));
+   *local_A_pp = malloc(local_n*m*sizeof(mat_col));
    *local_x_pp = malloc(local_n*sizeof(double));
    *local_y_pp = malloc(local_m*sizeof(double));
 
