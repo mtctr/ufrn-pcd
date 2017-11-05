@@ -80,18 +80,18 @@ int main(void) {
    Print_vector("x", local_x, n, local_n, my_rank, comm);
 #  endif
 
-//for (int r = 0; r < comm_sz; r++){
-  if(my_rank == 0){
-    printf("Rank: %d\n", my_rank);
-    for (int i = 0; i < m; i++){
-      for (int j = 0; j < local_n; j++){
-        printf("%f ",local_A[i*local_n+j]);
-      }
-      printf("\n");
-    }
-    printf("\n");
-  }
-//}
+// for (int r = 0; r < comm_sz; r++){
+//   if(my_rank == 0){
+//     printf("Rank: %d\n", my_rank);
+//     for (int i = 0; i < m; i++){
+//       for (int j = 0; j < local_n; j++){
+//         printf("%f ",local_A[i*local_n+j]);
+//       }
+//       printf("\n");
+//     }
+//     printf("\n");
+//   }
+// }
 
 
    MPI_Barrier(comm);
@@ -103,9 +103,10 @@ int main(void) {
    loc_elapsed = finish-start;
    MPI_Reduce(&loc_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-   Print_vector("y", local_y, m, local_m, my_rank, comm);
+   //Print_vector("y", local_y, m, local_m, my_rank, comm);
 
    if(my_rank ==0){
+     printf("Cores %d\n", comm_sz);
      printf("Elapsed time = %e\n", elapsed);
    }
 
@@ -184,10 +185,12 @@ void Get_dims(
    int local_ok = 1;
 
    if (my_rank == 0) {
-      printf("Enter the number of rows\n");
-      scanf("%d", m_p);
-      printf("Enter the number of columns\n");
-      scanf("%d", n_p);
+      // printf("Enter the number of rows\n");
+      // scanf("%d", m_p);
+      // printf("Enter the number of columns\n");
+      // scanf("%d", n_p);
+      *m_p = 16384;
+      *n_p = 16384;
    }
    MPI_Bcast(m_p, 1, MPI_INT, 0, comm);
    MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
@@ -232,7 +235,7 @@ void Allocate_arrays(
 
    int local_ok = 1;
 
-   *local_A_pp = malloc(local_n*m*sizeof(mat_col));
+   *local_A_pp = malloc(local_n*m*sizeof(double));
    *local_x_pp = malloc(local_n*sizeof(double));
    *local_y_pp = malloc(local_m*sizeof(double));
 

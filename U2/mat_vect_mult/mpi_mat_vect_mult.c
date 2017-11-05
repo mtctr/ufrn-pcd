@@ -67,9 +67,9 @@ int main(void) {
    Get_dims(&m, &local_m, &n, &local_n, my_rank, comm_sz, comm);
    Allocate_arrays(&local_A, &local_x, &local_y, local_m, n, local_n, comm);
    Read_matrix("A", local_A, m, local_m, n, my_rank, comm);
-//#  ifdef DEBUG
+#  ifdef DEBUG
    Print_matrix("A", local_A, m, local_m, n, my_rank, comm);
-//#  endif
+#  endif
    Read_vector("x", local_x, n, local_n, my_rank, comm);
 #  ifdef DEBUG
    Print_vector("x", local_x, n, local_n, my_rank, comm);
@@ -96,9 +96,10 @@ int main(void) {
    loc_elapsed = finish-start;
    MPI_Reduce(&loc_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-   Print_vector("y", local_y, m, local_m, my_rank, comm);
+   //Print_vector("y", local_y, m, local_m, my_rank, comm);
 
    if(my_rank ==0){
+     printf("Cores %d\n", comm_sz);
      printf("Elapsed time = %e\n", elapsed);
    }
 
@@ -178,10 +179,12 @@ void Get_dims(
    int local_ok = 1;
 
    if (my_rank == 0) {
-      printf("Enter the number of rows\n");
-      scanf("%d", m_p);
-      printf("Enter the number of columns\n");
-      scanf("%d", n_p);
+      // printf("Enter the number of rows\n");
+      // scanf("%d", m_p);
+      // printf("Enter the number of columns\n");
+      // scanf("%d", n_p);
+   	  *m_p = 4096;
+      *n_p = 4096;
    }
    MPI_Bcast(m_p, 1, MPI_INT, 0, comm);
    MPI_Bcast(n_p, 1, MPI_INT, 0, comm);
