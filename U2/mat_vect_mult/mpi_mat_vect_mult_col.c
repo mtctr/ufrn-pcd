@@ -66,7 +66,7 @@ int main(void) {
    Get_dims(&m, &local_m, &n, &local_n, my_rank, comm_sz, comm);
 
 
-   MPI_Type_vector(1, local_n, local_m, MPI_DOUBLE, &mat_col);
+   MPI_Type_vector(m, local_n, local_m, MPI_DOUBLE, &mat_col);
    MPI_Type_commit(&mat_col);
 
    Allocate_arrays(&local_A, &local_x, &local_y, local_m, m, local_n, comm, mat_col);
